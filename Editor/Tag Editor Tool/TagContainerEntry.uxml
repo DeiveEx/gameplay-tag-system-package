@@ -1,0 +1,12 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="True">
+    <Style src="project://database/Assets/_GAME/_Scripts/_Systems/Gameplay%20Tag%20System/Editor/TagDatabaseStyle.uss?fileID=7433441132597879392&amp;guid=b31601d3fb491824994cdade61218cba&amp;type=3#TagDatabaseStyle" />
+    <ui:VisualElement name="tag-container">
+        <ui:VisualElement name="tag-info" class="tag-info">
+            <ui:Foldout name="tag-fold" />
+            <ui:Label text="Tag Name" name="tag-name" class="tag-name" />
+            <ui:Button text="+" name="add-child-button" tooltip="Add a new child tag" />
+            <ui:Button text="..." name="options-button" tooltip="Tag options" />
+        </ui:VisualElement>
+        <ui:ScrollView name="child-list" class="tag-child-list" />
+    </ui:VisualElement>
+</ui:UXML>

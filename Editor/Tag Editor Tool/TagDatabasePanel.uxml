@@ -1,0 +1,10 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="True">
+    <Style src="project://database/Assets/_GAME/_Scripts/_Systems/Gameplay%20Tag%20System/Editor/Tag%20Editor%20Tool/TagDatabaseStyle.uss?fileID=7433441132597879392&amp;guid=b31601d3fb491824994cdade61218cba&amp;type=3#TagDatabaseStyle" />
+    <ui:VisualElement name="top-options" class="tag-database__options">
+        <ui:Button text="Expand All" display-tooltip-when-elided="true" name="expand-all-button" />
+        <ui:Button text="Collapse All" display-tooltip-when-elided="true" name="collapse-all-button" />
+        <uie:ToolbarSearchField focusable="true" name="search-input" class="tag__search-field" />
+        <ui:Button text="+" name="add-root-tag" />
+    </ui:VisualElement>
+    <ui:ScrollView scroll-deceleration-rate="0,135" elasticity="0,1" name="tag-list-scroll" class="main-tag__scroll-list" />
+</ui:UXML>

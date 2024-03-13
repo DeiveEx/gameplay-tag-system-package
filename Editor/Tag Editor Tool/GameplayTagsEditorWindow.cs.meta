@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: be0ce3a76fd87cf4db40978659873273
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - m_ViewDataDictionary: {instanceID: 0}
+  - _noDatabasePanel: {fileID: 9197481963319205126, guid: c929aef0a5ebc6744953ff7a2098a830, type: 3}
+  - _validDatabasePanel: {fileID: 9197481963319205126, guid: 5191aaa9d8ae90542a121dcd91f2b020, type: 3}
+  - _tagContainerEntry: {fileID: 9197481963319205126, guid: 8bfe4803df35562428bc14c101aebbdc, type: 3}
+  - _newTagPopupAsset: {fileID: 9197481963319205126, guid: 4480d6ff32906a547b268cce37656a67, type: 3}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

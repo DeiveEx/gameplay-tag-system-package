@@ -1,0 +1,43 @@
+.big-title {
+    margin: 10px;
+    font-size: 21px;
+    -unity-text-align: middle-center;
+}
+
+.create-tag__button {
+    height: 50px;
+}
+
+.tag-database__options {
+    flex-direction: row;
+    flex-grow: 0;
+    flex-shrink: 0;
+}
+
+.tag-info {
+    flex-direction: row;
+    flex-grow: 1;
+    flex-shrink: 0;
+}
+
+.tag-info:hover {
+    background-color: #585858;
+}
+
+.tag-child-list {
+    margin-left: 10px;
+}
+
+.unity-foldout__checkmark {
+    margin-right: 0;
+}
+
+.tag-name {
+    flex-grow: 1;
+    flex-shrink: 0;
+}
+
+.tag__search-field {
+    flex-shrink: 1;
+    flex-grow: 1;
+}

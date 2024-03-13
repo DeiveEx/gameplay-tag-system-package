@@ -1,0 +1,16 @@
+{
+    "name": "GameplayTagSystem",
+    "rootNamespace": "DeiveEx.GameplayTagSystem",
+    "references": [
+        "GUID:929f52484253ab04daa46fd495f15c94"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

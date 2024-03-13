@@ -1,0 +1,7 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="True">
+    <ui:VisualElement name="new-tag-popup" style="border-left-width: 1px; border-right-width: 1px; border-top-width: 1px; border-bottom-width: 1px; flex-grow: 1; justify-content: space-between; margin-left: 5px; margin-right: 5px; margin-top: 5px; margin-bottom: 5px;">
+        <ui:Label text="Add new child tag:" display-tooltip-when-elided="false" name="popup-title" style="-unity-text-align: upper-left; margin-left: 5px; margin-right: 5px;" />
+        <ui:TextField name="new-tag-input" />
+        <ui:Button text="Confirm" display-tooltip-when-elided="true" name="confirm-button" />
+    </ui:VisualElement>
+</ui:UXML>
