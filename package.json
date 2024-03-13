@@ -9,7 +9,7 @@
     "changelogUrl": "",
     "licensesUrl": "",
     "dependencies": {
-        
+        "com.deiveex.unity-utilities": "1.0.0"
     },
     "keywords": [
         "tag",
