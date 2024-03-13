@@ -1,0 +1,23 @@
+{
+    "name": "com.deiveex.gameplaytagsystem",
+    "version": "1.0.0",
+    "displayName": "Gameplay Tag System",
+    "description": "A multi-tag system for Unity",
+    "unity": "2022.3",
+    "unityRelease": "16f1",
+    "documentationUrl": "",
+    "changelogUrl": "",
+    "licensesUrl": "",
+    "dependencies": {
+        
+    },
+    "keywords": [
+        "tag",
+        "system"
+    ],
+    "author": {
+        "name": "Felipe Carmo Cavaco",
+        "email": "felipe.carmo.cavaco@gmail.com",
+        "url": "https://github.com/DeiveEx"
+    }
+}
