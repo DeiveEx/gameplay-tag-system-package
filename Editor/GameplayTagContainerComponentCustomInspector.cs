@@ -1,5 +1,6 @@
 using System.Linq;
 using UnityEditor;
+using UnityEngine;
 
 namespace DeiveEx.GameplayTagSystem.Editor
 {
@@ -9,7 +10,7 @@ namespace DeiveEx.GameplayTagSystem.Editor
         private GameplayTagContainerComponent _instance;
         private GameplayTagContainer _container;
         private bool _foldout;
-        private bool _showOnlyLeafTags;
+        private bool _showFullTagHierarchy;
 
         private void OnEnable()
         {
@@ -17,6 +18,9 @@ namespace DeiveEx.GameplayTagSystem.Editor
 
             _container = _instance.gameObject.GetGameplayTags();
             _container.tagChanged += OnTagChanged;
+
+            if (Application.isPlaying)
+                _foldout = true;
         }
 
         private void OnDisable()
@@ -52,7 +56,7 @@ namespace DeiveEx.GameplayTagSystem.Editor
 
         private void DrawTags()
         {
-            _showOnlyLeafTags = EditorGUILayout.Toggle("Show only Leaf Tags", _showOnlyLeafTags);
+            _showFullTagHierarchy = EditorGUILayout.Toggle("Show full tag hierarchy", _showFullTagHierarchy);
 
             using (new EditorGUI.DisabledScope(true))
             {
@@ -60,7 +64,7 @@ namespace DeiveEx.GameplayTagSystem.Editor
                 {
                     var gameplayTag = _container.GetGameplayTag(tag);
 
-                    if(_showOnlyLeafTags && gameplayTag.ChildTags.Any())
+                    if(!_showFullTagHierarchy && gameplayTag.ChildTags.Any())
                         continue;
                 
                     EditorGUILayout.BeginHorizontal();
@@ -69,7 +73,7 @@ namespace DeiveEx.GameplayTagSystem.Editor
                     EditorGUILayout.LabelField($"{gameplayTag.Count}");
                     
                     EditorGUILayout.EndHorizontal();
-                } 
+                }
             }
         }
     }
