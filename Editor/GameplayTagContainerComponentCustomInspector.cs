@@ -1,6 +1,5 @@
 using System.Linq;
 using UnityEditor;
-using UnityEngine;
 
 namespace DeiveEx.GameplayTagSystem.Editor
 {
@@ -9,8 +8,8 @@ namespace DeiveEx.GameplayTagSystem.Editor
     {
         private GameplayTagContainerComponent _instance;
         private GameplayTagContainer _container;
-        private bool _foldout;
-        private bool _showFullTagHierarchy;
+        private static bool _foldout = true;
+        private static bool _showFullTagHierarchy;
 
         private void OnEnable()
         {
@@ -18,9 +17,6 @@ namespace DeiveEx.GameplayTagSystem.Editor
 
             _container = _instance.gameObject.GetGameplayTags();
             _container.tagChanged += OnTagChanged;
-
-            if (Application.isPlaying)
-                _foldout = true;
         }
 
         private void OnDisable()
