@@ -72,7 +72,10 @@ namespace DeiveEx.GameplayTagSystem
 		}
 
 		/// <summary>
-		/// Check if a certain tag exists in the hierarchy.
+		/// Check if a certain tag exists in the hierarchy. This returns true even when the tag is not an exact match.<br/>
+		/// Ex:<br/>
+		/// A.B.C == A.B.C -> true<br/>
+		/// A.B == A.B.C -> true
 		/// </summary>
 		/// <param name="tag">The tag to be searched for.</param>
 		/// <returns>Returns true if the tag was found.</returns>
@@ -84,7 +87,7 @@ namespace DeiveEx.GameplayTagSystem
 
 		/// <summary>
 		/// Check if the tag exists and if it's an exact match.<br/><br/>
-		/// An exact match works as:<br/>
+		/// Ex:<br/>
 		/// A.B.C == A.B.C -> true<br/>
 		/// A.B == A.B.C -> false
 		/// </summary>
