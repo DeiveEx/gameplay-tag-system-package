@@ -1,10 +1,12 @@
 {
-    "name": "GameplayTagSystem",
-    "rootNamespace": "DeiveEx.GameplayTagSystem",
+    "name": "DeiveEx.GameplayTagSystem.Editor",
+    "rootNamespace": "DeiveEx.GameplayTagSystem.Editor",
     "references": [
-        "GUID:929f52484253ab04daa46fd495f15c94"
+        "GUID:5cf2fe07a463dec42a64693dc4c02b2d"
     ],
-    "includePlatforms": [],
+    "includePlatforms": [
+        "Editor"
+    ],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": false,

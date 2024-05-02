@@ -30,7 +30,7 @@ namespace DeiveEx.GameplayTagSystem
 				return $"{parentTagName}{TagName}";
 			}
 		}
-		
+
 		public GameplayTag ParentTag { get; private set; }
 		[Tooltip("The number of times this tag was applied. A tag is only removed when this value reaches zero")]
 		public int Count => _count;

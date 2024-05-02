@@ -1,10 +1,10 @@
 {
-    "name": "GameplayTagSystem.EditorTests",
+    "name": "DeiveEx.GameplayTagSystem.EditorTests",
     "rootNamespace": "",
     "references": [
         "UnityEngine.TestRunner",
         "UnityEditor.TestRunner",
-        "GameplayTagSystem"
+        "DeiveEx.GameplayTagSystem"
     ],
     "includePlatforms": [
         "Editor"

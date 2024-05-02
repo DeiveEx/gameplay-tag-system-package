@@ -6,8 +6,8 @@ using System.Text;
 
 //This property makes it so all internal methods defined in this assembly namespace are also available to another assembly.
 //Useful for Unit Tests and Editor Tools
-[assembly:InternalsVisibleTo("GameplayTagSystem.EditorTests")]
-[assembly:InternalsVisibleTo("GameplayTagSystem.Editor")]
+[assembly:InternalsVisibleTo("DeiveEx.GameplayTagSystem.EditorTests")]
+[assembly:InternalsVisibleTo("DeiveEx.GameplayTagSystem.Editor")]
 
 namespace DeiveEx.GameplayTagSystem
 {
@@ -168,7 +168,13 @@ namespace DeiveEx.GameplayTagSystem
 			       HasAllTags((IEnumerable<string>)tagsToSearch);
 		}
 
-		public void ValidateTag(string tag)
+		/// <summary>
+		/// Checks if a Tag currently exists in the Database
+		/// </summary>
+		/// <param name="tag">The tag to check</param>
+		/// <exception cref="NullReferenceException">Throw when Database is not loaded</exception>
+		/// <exception cref="InvalidOperationException">Throw when Tag is not in Database</exception>
+		public static void ValidateTag(string tag)
 		{
 			if (GameplayTagDatabase.Database == null)
 				throw new NullReferenceException($"No Tag Database detected! Make sure the Database is loaded before trying to validate a Tag");
