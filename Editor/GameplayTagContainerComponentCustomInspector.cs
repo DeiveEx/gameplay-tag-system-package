@@ -56,16 +56,14 @@ namespace DeiveEx.GameplayTagSystem.Editor
 
             using (new EditorGUI.DisabledScope(true))
             {
-                foreach (var tag in _container.CurrentTags)
+                foreach (var gameplayTag in _container.CurrentTags)
                 {
-                    var gameplayTag = _container.GetGameplayTag(tag);
-
                     if(!_showFullTagHierarchy && gameplayTag.ChildTags.Any())
                         continue;
                 
                     EditorGUILayout.BeginHorizontal();
                     
-                    EditorGUILayout.PrefixLabel(tag);
+                    EditorGUILayout.PrefixLabel(gameplayTag.FullTagName);
                     EditorGUILayout.LabelField($"{gameplayTag.Count}");
                     
                     EditorGUILayout.EndHorizontal();

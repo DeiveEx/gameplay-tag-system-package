@@ -36,7 +36,7 @@ namespace DeiveEx.GameplayTagSystem
 
 		#region Properties
 
-		public IEnumerable<string> CurrentTags => GetGameplayTagRecursive().Select(x => x.FullTagName);
+		public IEnumerable<GameplayTag> CurrentTags => GetGameplayTagRecursive();
 
 		#endregion
 
