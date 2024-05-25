@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
+using UnityEngine;
 
 //This property makes it so all internal methods defined in this assembly namespace are also available to another assembly.
 //Useful for Unit Tests and Editor Tools
@@ -220,6 +221,57 @@ namespace DeiveEx.GameplayTagSystem
 			return sb.ToString();
 		}
 
+		public GameplayTagContainerState GetState()
+		{
+			var tagList = new List<GameplayTagWrapper>();
+			var currentTags = GetGameplayTagRecursive();
+
+			foreach (var childTag in currentTags)
+			{
+				tagList.Add(new GameplayTagWrapper()
+				{
+					TagName = childTag.TagName,
+					ParentTagIndex = childTag.ParentTag  == null ? -1 : currentTags.IndexOf(childTag.ParentTag),
+					Count = childTag.Count
+				});
+			}
+
+			return new GameplayTagContainerState()
+			{
+				TagCount = tagList.Count,
+				Tags = tagList.ToArray(),
+			};
+		}
+
+		public void ApplyState(GameplayTagContainerState state)
+		{
+			string GetFullTagNameFromTagWrapper(GameplayTagWrapper tagWrapper)
+			{
+				if (tagWrapper.ParentTagIndex > -1)
+					return GetFullTagNameFromTagWrapper(state.Tags[tagWrapper.ParentTagIndex]) + "." + tagWrapper.TagName;
+				
+				return tagWrapper.TagName;
+			}
+			
+			Dictionary<string, GameplayTagWrapper> fullTagNames = state.Tags.ToDictionary(GetFullTagNameFromTagWrapper, x => x);
+			
+			//Did we remove any tags?
+			//TODO
+			
+			//Did we add any tags?
+			foreach (var tagPair in fullTagNames)
+			{
+				if (!HasTag(tagPair.Key))
+				{
+					AddTag(tagPair.Key);
+					Debug.Log($"Found a tag that didn't exist, adding it: {tagPair.Key}");
+				}
+			}
+			
+			//Did the count changed for any of the remaining tags?
+			//TODO
+		}
+
 		#endregion
 
 		#region Private Methods
@@ -335,7 +387,7 @@ namespace DeiveEx.GameplayTagSystem
 			return parentTag.ChildTags;
 		}
 		
-		internal IEnumerable<GameplayTag> GetGameplayTagRecursive(GameplayTag parentTag = null)
+		internal List<GameplayTag> GetGameplayTagRecursive(GameplayTag parentTag = null)
 		{
 			if (parentTag == null)
 				parentTag = _masterContainerTag;
