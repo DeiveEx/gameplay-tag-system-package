@@ -253,23 +253,46 @@ namespace DeiveEx.GameplayTagSystem
 				return tagWrapper.TagName;
 			}
 			
-			Dictionary<string, GameplayTagWrapper> fullTagNames = state.Tags.ToDictionary(GetFullTagNameFromTagWrapper, x => x);
+			Dictionary<string, GameplayTagWrapper> stateTags = state.Tags.Reverse().ToDictionary(GetFullTagNameFromTagWrapper, x => x);
+			var currentTagList = GetGameplayTagRecursive();
+			currentTagList.Reverse();
+			Dictionary<string, GameplayTag> currentTags = currentTagList.ToDictionary(x => x.FullTagName, x => x);
 			
 			//Did we remove any tags?
-			//TODO
+			var removedTags = currentTags.Keys.Where(x => !stateTags.ContainsKey(x));
+
+			foreach (var tag in removedTags)
+			{
+				if(!HasTagExact(tag))
+					continue;
+				
+				RemoveTagInternal(tag, true);
+			}
 			
 			//Did we add any tags?
-			foreach (var tagPair in fullTagNames)
-			{
-				if (!HasTag(tagPair.Key))
-				{
-					AddTag(tagPair.Key);
-					Debug.Log($"Found a tag that didn't exist, adding it: {tagPair.Key}");
-				}
+			var addedTags = stateTags.Keys.Where(x => !currentTags.ContainsKey(x));
+
+			foreach (var tag in addedTags)
+			{	
+				if(HasTag(tag))
+					continue;
+				
+				AddTagInternal(tag);
 			}
 			
 			//Did the count changed for any of the remaining tags?
-			//TODO
+			var modifiedTags = currentTags.Where(x => stateTags.ContainsKey(x.Key) && x.Value.Count != stateTags[x.Key].Count);
+
+			foreach (var tagPair in modifiedTags)
+			{
+				var stateTag = stateTags[tagPair.Key];
+				var actualTag = tagPair.Value;
+
+				var tagChangedEventType = stateTag.Count > actualTag.Count ? GameplayTagChangedEventType.CounterIncreased : GameplayTagChangedEventType.CounterDecreased;
+				
+				actualTag.SetCount(stateTag.Count);
+				tagChanged?.Invoke(this, new GameplayTagChangedEventArgs() { tag = actualTag, eventType = tagChangedEventType });
+			}
 		}
 
 		#endregion
