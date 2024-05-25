@@ -459,4 +459,25 @@ public class GameplayTagSystemTests
 			Assert.IsFalse(_tagContainer.HasTag(tag));
 		}
 	}
+	
+	[Test]
+	[TestCase("a")]
+	[TestCase("a.b")]
+	[TestCase("a.b.c")]
+	public void Tag_Has_Correct_Parent(string tagToAdd)
+	{
+		_tagContainer.AddTagInternal(tagToAdd);
+		var gameplayTag = _tagContainer.GetGameplayTag(tagToAdd);
+
+		string[] parts = tagToAdd.Split(".");
+
+		if (parts.Length == 1)
+		{
+			Assert.IsNull(gameplayTag.ParentTag);
+		}
+		else
+		{
+			Assert.AreEqual(parts[^2], gameplayTag.ParentTag.TagName);
+		}
+	}
 }
