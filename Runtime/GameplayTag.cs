@@ -11,8 +11,9 @@ namespace DeiveEx.GameplayTagSystem
 	[Serializable]
 	public class GameplayTag
 	{
-		public const string MASTER_TAG = "MasterTag";
+		internal const string MASTER_TAG = "MasterTag";
 
+		private GameplayTag _parentTag;
 		private Dictionary<string, GameplayTag> _childTags = new();
 		private int _count;
 
@@ -31,7 +32,17 @@ namespace DeiveEx.GameplayTagSystem
 			}
 		}
 
-		public GameplayTag ParentTag { get; private set; }
+		public GameplayTag ParentTag
+		{
+			get
+			{
+				if (_parentTag.TagName == MASTER_TAG)
+					return null;
+
+				return _parentTag;
+			}
+		}
+
 		[Tooltip("The number of times this tag was applied. A tag is only removed when this value reaches zero")]
 		public int Count => _count;
 		public IEnumerable<GameplayTag> ChildTags => _childTags.Values;
@@ -45,7 +56,7 @@ namespace DeiveEx.GameplayTagSystem
 		internal void AddChild(GameplayTag tag)
 		{
 			_childTags.Add(tag.TagName, tag);
-			tag.ParentTag = this;
+			tag._parentTag = this;
 		}
 
 		internal void RemoveChild(GameplayTag tag)
@@ -64,6 +75,11 @@ namespace DeiveEx.GameplayTagSystem
 		internal void ChangeTagName(string newName)
 		{
 			TagName = newName;
+		}
+		
+		internal GameplayTag GetParentTagInternal()
+		{
+			return _parentTag;
 		}
 	}
 }

@@ -296,7 +296,7 @@ namespace DeiveEx.GameplayTagSystem
 
 			//Here, we decrease the counter of the entire hierarchy. If the counter reaches zero, we remove it
 			GameplayTag currentTag = tagContainer;
-			GameplayTag parentTag = tagContainer.ParentTag;
+			GameplayTag parentTag = tagContainer.GetParentTagInternal();
 
 			do
 			{
@@ -318,8 +318,8 @@ namespace DeiveEx.GameplayTagSystem
 					tagChanged?.Invoke(this, new GameplayTagChangedEventArgs() { tag = currentTag, eventType = GameplayTagChangedEventType.CounterDecreased });
 				}
 
-				currentTag = currentTag.ParentTag;
-				parentTag = currentTag.ParentTag;
+				currentTag = currentTag.GetParentTagInternal();
+				parentTag = currentTag.GetParentTagInternal();
 			}
 			while (currentTag != _masterContainerTag);
 		}
