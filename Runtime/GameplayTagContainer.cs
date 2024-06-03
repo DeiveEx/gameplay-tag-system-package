@@ -243,7 +243,7 @@ namespace DeiveEx.GameplayTagSystem
 			};
 		}
 
-		public void ApplyState(GameplayTagContainerState state)
+		public void ApplyState(GameplayTagContainerState state, bool fireEvents = true)
 		{
 			string GetFullTagNameFromTagWrapper(GameplayTagWrapper tagWrapper)
 			{
@@ -266,7 +266,7 @@ namespace DeiveEx.GameplayTagSystem
 				if(!HasTagExact(tag))
 					continue;
 				
-				RemoveTagInternal(tag, true);
+				RemoveTagInternal(tag, true, fireEvents);
 			}
 			
 			//Did we add any tags?
@@ -277,7 +277,7 @@ namespace DeiveEx.GameplayTagSystem
 				if(HasTag(tag))
 					continue;
 				
-				AddTagInternal(tag);
+				AddTagInternal(tag, fireEvents);
 			}
 			
 			//Did the count changed for any of the remaining tags?
@@ -291,7 +291,9 @@ namespace DeiveEx.GameplayTagSystem
 				var tagChangedEventType = stateTag.Count > actualTag.Count ? GameplayTagChangedEventType.CounterIncreased : GameplayTagChangedEventType.CounterDecreased;
 				
 				actualTag.SetCount(stateTag.Count);
-				tagChanged?.Invoke(this, new GameplayTagChangedEventArgs() { tag = actualTag, eventType = tagChangedEventType });
+				
+				if(fireEvents)
+					tagChanged?.Invoke(this, new GameplayTagChangedEventArgs() { tag = actualTag, eventType = tagChangedEventType });
 			}
 		}
 
@@ -314,7 +316,7 @@ namespace DeiveEx.GameplayTagSystem
 		
 		#region Internal Methods
 
-		internal void AddTagInternal(string tag)
+		internal void AddTagInternal(string tag, bool fireEvents = true)
 		{
 			tag = tag.ToLower();
 			GameplayTag tagContainer = GetGameplayTag(tag);
@@ -331,7 +333,9 @@ namespace DeiveEx.GameplayTagSystem
 				}
 				while (currentTag != null);
 
-				tagChanged?.Invoke(this, new GameplayTagChangedEventArgs() { tag = tagContainer, eventType = GameplayTagChangedEventType.CounterIncreased });
+				if(fireEvents)
+					tagChanged?.Invoke(this, new GameplayTagChangedEventArgs() { tag = tagContainer, eventType = GameplayTagChangedEventType.CounterIncreased });
+				
 				return;
 			}
 
@@ -352,7 +356,9 @@ namespace DeiveEx.GameplayTagSystem
 				{
 					container = new GameplayTag(tagHierarchy[i]);
 					parentContainer.AddChild(container);
-					tagChanged?.Invoke(this, new GameplayTagChangedEventArgs() { tag = container, eventType = GameplayTagChangedEventType.Added });
+					
+					if(fireEvents)
+						tagChanged?.Invoke(this, new GameplayTagChangedEventArgs() { tag = container, eventType = GameplayTagChangedEventType.Added });
 				}
 
 				parentContainer = container;
@@ -360,7 +366,7 @@ namespace DeiveEx.GameplayTagSystem
 			}
 		}
 		
-		internal void RemoveTagInternal(string tag, bool ignoreCount = false)
+		internal void RemoveTagInternal(string tag, bool ignoreCount = false, bool fireEvents = true)
 		{
 			tag = tag.ToLower();
 			GameplayTag tagContainer = GetGameplayTag(tag);
@@ -386,11 +392,14 @@ namespace DeiveEx.GameplayTagSystem
 				if (currentTag.Count <= 0)
 				{
 					parentTag.RemoveChild(currentTag);
-					tagChanged?.Invoke(this, new GameplayTagChangedEventArgs() { tag = currentTag, eventType = GameplayTagChangedEventType.Removed });
+					
+					if(fireEvents)
+						tagChanged?.Invoke(this, new GameplayTagChangedEventArgs() { tag = currentTag, eventType = GameplayTagChangedEventType.Removed });
 				}
 				else
 				{
-					tagChanged?.Invoke(this, new GameplayTagChangedEventArgs() { tag = currentTag, eventType = GameplayTagChangedEventType.CounterDecreased });
+					if(fireEvents)
+						tagChanged?.Invoke(this, new GameplayTagChangedEventArgs() { tag = currentTag, eventType = GameplayTagChangedEventType.CounterDecreased });
 				}
 
 				currentTag = currentTag.GetParentTagInternal();
