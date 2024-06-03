@@ -38,7 +38,7 @@ namespace DeiveEx.GameplayTagSystem
             _tagDatabase = new ();
 
             if(tagFilePaths == null)
-                tagFilePaths = FileUtility.GetFilesWithExtensionRecursive(DatabasePath, TAG_DATABASE_FILE_EXTENSION);
+                tagFilePaths = UtilityServices.FileService.GetFilesWithExtensionRecursive(DatabasePath, TAG_DATABASE_FILE_EXTENSION);
 			
             if (!tagFilePaths.Any())
                 throw new NullReferenceException("No Tag Database found! Use the Editor Tool under \"Tools > Edit Gameplay Tags\" to create a new Database");
@@ -59,7 +59,7 @@ namespace DeiveEx.GameplayTagSystem
 
         public static IEnumerable<string> GetAvailableTabFilesInProject()
         {
-            return FileUtility.GetFilesWithExtensionRecursive(DatabasePath, TAG_DATABASE_FILE_EXTENSION);
+            return UtilityServices.FileService.GetFilesWithExtensionRecursive(DatabasePath, TAG_DATABASE_FILE_EXTENSION);
         }
         
         public static string GetDebugInfo()
