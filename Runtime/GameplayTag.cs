@@ -55,6 +55,56 @@ namespace DeiveEx.GameplayTagSystem
 			TagName = tagName;
 			_count = 1;
 		}
+		
+		/// <summary>
+		/// Check if this tag is similar to the given tag. Note that they don't need to be exact the same.
+		/// For checking hierarchical exactness, use <see cref="CompareExact"/> 
+		/// </summary>
+		/// <example>
+		/// a.b.c == a.b.c TRUE<br/>
+		/// a.b == a.b.c TRUE<br/>
+		/// a.b.x == a.b.y FALSE<br/>
+		/// </example>
+		/// <param name="other"></param>
+		/// <returns></returns>
+		public bool Compare(GameplayTag other)
+		{
+			//A will be the tag with the smallest depth
+			var a = _depth <= other._depth ? this : other;
+			var b = _depth > other._depth ? this : other;
+
+			//Get the same depth on B
+			while (b._depth != a._depth)
+			{
+				b = b.ParentTag;
+			}
+			
+			//From the smallest depth and up, the entire hierarchy needs to be the same for it to be considered similar
+			for (int i = a.Depth; i >= 0; i--)
+			{	
+				if (a.TagName != b.TagName)
+					return false;
+
+				a = a.ParentTag;
+				b = b.ParentTag;
+			}
+
+			return true;
+		}
+
+		/// <summary>
+		/// Check if both tags are exactly the same.
+		/// </summary>
+		/// <example>
+		/// a.b.c == a.b.c TRUE<br/>
+		/// a.b.c == a.b FALSE
+		/// </example>
+		/// <param name="other"></param>
+		/// <returns></returns>
+		public bool CompareExact(GameplayTag other)
+		{
+			return FullTagName == other.FullTagName;
+		}
 
 		internal void AddChild(GameplayTag tag)
 		{
