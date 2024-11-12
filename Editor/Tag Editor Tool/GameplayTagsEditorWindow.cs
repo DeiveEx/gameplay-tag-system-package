@@ -422,7 +422,7 @@ namespace DeiveEx.GameplayTagSystem.Editor
 
         private IList<GameplayTag> GetOrderedTagList(GameplayTag parentTag = null)
         {
-            return GameplayTagDatabase.Database.GetChildTagList(parentTag).OrderBy(x => x.TagName).ToList();
+            return GameplayTagDatabase.Database.GetRootOrChildList(parentTag).OrderBy(x => x.TagName).ToList();
         }
 
         #endregion

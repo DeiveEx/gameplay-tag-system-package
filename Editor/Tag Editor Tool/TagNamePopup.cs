@@ -37,6 +37,7 @@ namespace DeiveEx.GameplayTagSystem.Editor
             _input.RegisterCallback<KeyDownEvent>(OnKeyDown);
 
             ToggleConfirmButton();
+            _input.Focus(); //Doesn't work for some reason... Probably something related to Popup
         }
 
         public override Vector2 GetWindowSize()
