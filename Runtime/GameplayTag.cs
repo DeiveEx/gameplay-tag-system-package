@@ -16,6 +16,7 @@ namespace DeiveEx.GameplayTagSystem
 		private GameplayTag _parentTag;
 		private Dictionary<string, GameplayTag> _childTags = new();
 		private int _count;
+		private int _depth;
 
 		public string TagName { get; private set; }
 
@@ -43,6 +44,8 @@ namespace DeiveEx.GameplayTagSystem
 			}
 		}
 
+		public int Depth => _depth - 1; //Remove 1 because we don't consider the as a valid depth
+
 		[Tooltip("The number of times this tag was applied. A tag is only removed when this value reaches zero")]
 		public int Count => _count;
 		public IEnumerable<GameplayTag> ChildTags => _childTags.Values;
@@ -57,6 +60,7 @@ namespace DeiveEx.GameplayTagSystem
 		{
 			_childTags.Add(tag.TagName, tag);
 			tag._parentTag = this;
+			tag._depth = _depth + 1;
 		}
 
 		internal void RemoveChild(GameplayTag tag)
