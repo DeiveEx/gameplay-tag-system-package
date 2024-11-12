@@ -85,5 +85,21 @@ namespace DeiveEx.GameplayTagSystem
 		{
 			return _parentTag;
 		}
+
+		public static GameplayTag Create(string tag)
+		{
+			tag = tag.ToLower();
+			string[] tagHierarchy = tag.Split('.');
+			var currentTag = new GameplayTag(tagHierarchy[0]);
+
+			for (int i = 1; i < tagHierarchy.Length; i++)
+			{
+				var childTag = new GameplayTag(tagHierarchy[i]);
+				currentTag.AddChild(childTag);
+				currentTag = childTag;
+			}
+
+			return currentTag;
+		}
 	}
 }
