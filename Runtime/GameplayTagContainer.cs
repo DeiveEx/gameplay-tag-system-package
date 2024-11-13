@@ -31,7 +31,7 @@ namespace DeiveEx.GameplayTagSystem
 	{
 		#region Fields
 
-		private GameplayTag _masterContainerTag = new(GameplayTag.MASTER_TAG);
+		private List<GameplayTag> _rootTags = new();
 		
 		#endregion
 
@@ -56,7 +56,7 @@ namespace DeiveEx.GameplayTagSystem
 		public void AddTag(string tag)
 		{
 			tag = tag.ToLower();
-			ValidateTag(tag);
+			GameplayTag.ValidateTag(tag);
 			AddTagInternal(tag);
 		}
 
@@ -68,7 +68,7 @@ namespace DeiveEx.GameplayTagSystem
 		public void RemoveTag(string tag, bool ignoreCount = false)
 		{
 			tag = tag.ToLower();
-			ValidateTag(tag);
+			GameplayTag.ValidateTag(tag);
 			RemoveTagInternal(tag, ignoreCount);
 		}
 
@@ -112,12 +112,12 @@ namespace DeiveEx.GameplayTagSystem
 			string[] tagHierarchy = tag.Split('.');
 			int currentDepth = 0;
 
-			IEnumerable<GameplayTag> tagList = _masterContainerTag.ChildTags;
+			IEnumerable<GameplayTag> tagList = _rootTags;
 			GameplayTag currentContainer = null;
 
 			do
 			{
-				currentContainer = GetTagInList(tagList, tagHierarchy[currentDepth]);
+				currentContainer = GetTagInList(tagHierarchy[currentDepth], tagList);
 
 				//If we couldn't find a match for the current child tag, we don't have this tag at all
 				if (currentContainer == null)
@@ -147,7 +147,7 @@ namespace DeiveEx.GameplayTagSystem
 		public bool HasAnyTag(params string[] tagsToSearch)
 		{
 			if (tagsToSearch.Length == 0)
-				return _masterContainerTag.ChildTags.Any();
+				return _rootTags.Any();
 			
 			return HasAnyTag((IEnumerable<string>)tagsToSearch);
 		}
@@ -170,32 +170,15 @@ namespace DeiveEx.GameplayTagSystem
 		}
 
 		/// <summary>
-		/// Checks if a Tag currently exists in the Database
-		/// </summary>
-		/// <param name="tag">The tag to check</param>
-		/// <exception cref="NullReferenceException">Throw when Database is not loaded</exception>
-		/// <exception cref="InvalidOperationException">Throw when Tag is not in Database</exception>
-		public static void ValidateTag(string tag)
-		{
-			if (GameplayTagDatabase.Database == null)
-				throw new NullReferenceException($"No Tag Database detected! Make sure the Database is loaded before trying to validate a Tag");
-			
-			if (GameplayTagDatabase.Database.HasTag(tag))
-				return;
-
-			throw new InvalidOperationException($"Tag [{tag}] is not in the database. Make sure the Tag is in the Database before using it");
-		}
-
-		/// <summary>
 		/// Removes all tags from this container
 		/// </summary>
 		public void ClearTags()
 		{
-			var childTags = _masterContainerTag.ChildTags.ToList();
+			var childTags = _rootTags.ToList();
 
 			foreach (var tag in childTags)
 			{
-				_masterContainerTag.RemoveChild(tag);
+				_rootTags.Remove(tag);
 			}
 		}
 		
@@ -301,15 +284,27 @@ namespace DeiveEx.GameplayTagSystem
 
 		#region Private Methods
 
-		private GameplayTag GetTagInList(IEnumerable<GameplayTag> tagList, string childTag)
+		private GameplayTag GetTagInList(string tagToSearch, IEnumerable<GameplayTag> tagList)
 		{
-			foreach (var childContainer in tagList)
+			foreach (var gameplayTag in tagList)
 			{
-				if (childContainer.TagName == childTag)
-					return childContainer;
+				if (gameplayTag.TagName == tagToSearch)
+					return gameplayTag;
 			}
 
 			return null;
+		}
+
+		private GameplayTag GetRootGameplayTag(GameplayTag leafTag)
+		{
+			var current = leafTag;
+			
+			while (current.ParentTag != null)
+			{
+				current = current.ParentTag;
+			}
+
+			return current;
 		}
 
 		#endregion
@@ -319,79 +314,125 @@ namespace DeiveEx.GameplayTagSystem
 		internal void AddTagInternal(string tag, bool fireEvents = true)
 		{
 			tag = tag.ToLower();
-			GameplayTag tagContainer = GetGameplayTag(tag);
-
-			//If we already have this tag, we increase the counter of the entire hierarchy and then return
-			if (tagContainer != null)
+			var gameplayTag = GameplayTag.Create(tag);
+			var current = GetRootGameplayTag(gameplayTag);
+			GameplayTag currentOwned = null;
+			
+			//Increase the counter if we already have this tag
+			do
 			{
-				GameplayTag currentTag = tagContainer;
+				var childList = GetRootOrChildList(currentOwned);
+				var existingTag = GetTagInList(current.TagName, childList);
 
-				do
-				{
-					currentTag.SetCount(currentTag.Count + 1);
-					currentTag = currentTag.ParentTag;
-				}
-				while (currentTag != null);
-
-				if(fireEvents)
-					tagChanged?.Invoke(this, new GameplayTagChangedEventArgs() { tag = tagContainer, eventType = GameplayTagChangedEventType.CounterIncreased });
+				if (existingTag == null)
+					break;
 				
-				return;
-			}
+				existingTag.SetCount(existingTag.Count + 1);
 
-			//If we don't have it yet, we add all nodes of the tag
-			string[] tagHierarchy = tag.Split('.');
-			GameplayTag parentContainer = _masterContainerTag;
-			IEnumerable<GameplayTag> tagList = _masterContainerTag.ChildTags;
-
-			for (int i = 0; i < tagHierarchy.Length; i++)
-			{
-				GameplayTag container = GetTagInList(tagList, tagHierarchy[i]);
-
-				if (container != null)
-				{
-					container.SetCount(container.Count + 1);
-				}
-				else
-				{
-					container = new GameplayTag(tagHierarchy[i]);
-					parentContainer.AddChild(container);
+				if (fireEvents)
+					tagChanged?.Invoke(this, new GameplayTagChangedEventArgs() { tag = existingTag, eventType = GameplayTagChangedEventType.CounterIncreased });
 					
-					if(fireEvents)
-						tagChanged?.Invoke(this, new GameplayTagChangedEventArgs() { tag = container, eventType = GameplayTagChangedEventType.Added });
-				}
-
-				parentContainer = container;
-				tagList = container.ChildTags;
+				current = current.ChildTags.FirstOrDefault(); //Since this is a newly created tag, it only has 1 child in all levels
+				currentOwned = existingTag;
 			}
+			while (current != null);
+
+			//Check if we still have tags to add, which basically means we don't have this tag yet
+			if (current == null)
+				return;
+			
+			//If we couldn't find ANY of the tags in the given hierarchy, currentOwned will be null, meaning we need to add this tag to the root
+			if(currentOwned == null)
+				_rootTags.Add(current);
+			else
+				currentOwned.AddChild(current);
+					
+			//Since we're adding all children tags, we need to fire the event for each of them
+			if (fireEvents)
+			{
+				while (current != null)
+				{
+					tagChanged?.Invoke(this, new GameplayTagChangedEventArgs() { tag = current, eventType = GameplayTagChangedEventType.Added });
+					current = current.ChildTags.FirstOrDefault();
+				}
+			}
+
+
+			// tag = tag.ToLower();
+			// GameplayTag tagContainer = GetGameplayTag(tag);
+			//
+			// //If we already have this tag, we increase the counter of the entire hierarchy and then return
+			// if (tagContainer != null)
+			// {
+			// 	GameplayTag currentTag = tagContainer;
+			//
+			// 	do
+			// 	{
+			// 		currentTag.SetCount(currentTag.Count + 1);
+			// 		currentTag = currentTag.ParentTag;
+			// 	}
+			// 	while (currentTag != null);
+			//
+			// 	if(fireEvents)
+			// 		tagChanged?.Invoke(this, new GameplayTagChangedEventArgs() { tag = tagContainer, eventType = GameplayTagChangedEventType.CounterIncreased });
+			// 	
+			// 	return;
+			// }
+			//
+			// //If we don't have it yet, we add all nodes of the tag
+			// string[] tagHierarchy = tag.Split('.');
+			// GameplayTag parentContainer = _masterContainerTag;
+			// IEnumerable<GameplayTag> tagList = _masterContainerTag.ChildTags;
+			//
+			// for (int i = 0; i < tagHierarchy.Length; i++)
+			// {
+			// 	GameplayTag container = GetTagInList(tagList, tagHierarchy[i]);
+			//
+			// 	if (container != null)
+			// 	{
+			// 		container.SetCount(container.Count + 1);
+			// 	}
+			// 	else
+			// 	{
+			// 		container = new GameplayTag(tagHierarchy[i]);
+			// 		parentContainer.AddChild(container);
+			// 		
+			// 		if(fireEvents)
+			// 			tagChanged?.Invoke(this, new GameplayTagChangedEventArgs() { tag = container, eventType = GameplayTagChangedEventType.Added });
+			// 	}
+			//
+			// 	parentContainer = container;
+			// 	tagList = container.ChildTags;
+			// }
 		}
 		
 		internal void RemoveTagInternal(string tag, bool ignoreCount = false, bool fireEvents = true)
 		{
 			tag = tag.ToLower();
-			GameplayTag tagContainer = GetGameplayTag(tag);
-
-			//If we don't have this tag, we return
-			if (tagContainer == null)
+			
+			//Check if we have this tag
+			GameplayTag currentTag = GetGameplayTag(tag);
+			GameplayTag parentTag = currentTag?.ParentTag;
+			
+			if(currentTag == null)
 				return;
-
+			
 			//Here, we decrease the counter of the entire hierarchy. If the counter reaches zero, we remove it
-			GameplayTag currentTag = tagContainer;
-			GameplayTag parentTag = tagContainer.GetParentTagInternal();
-
 			do
 			{
-				//Here we set the counter to zero is we want to ignore the counter. Otherwise, we only decrease its counter
-				//Note that we only completely
+				//If ignoreCount is true, we set the counter to zero. Otherwise, we only decrease it by 1
 				if (ignoreCount && currentTag.FullTagName == tag)
 					currentTag.SetCount(0);
 				else
 					currentTag.SetCount(currentTag.Count - 1);
-
+			
 				//If the counter of the tag is zero, we remove it entirely
 				if (currentTag.Count <= 0)
 				{
-					parentTag.RemoveChild(currentTag);
+					if (parentTag != null)
+						parentTag.RemoveChild(currentTag);
+					else
+						_rootTags.Remove(currentTag);
 					
 					if(fireEvents)
 						tagChanged?.Invoke(this, new GameplayTagChangedEventArgs() { tag = currentTag, eventType = GameplayTagChangedEventType.Removed });
@@ -401,35 +442,27 @@ namespace DeiveEx.GameplayTagSystem
 					if(fireEvents)
 						tagChanged?.Invoke(this, new GameplayTagChangedEventArgs() { tag = currentTag, eventType = GameplayTagChangedEventType.CounterDecreased });
 				}
-
-				currentTag = currentTag.GetParentTagInternal();
-				parentTag = currentTag.GetParentTagInternal();
+			
+				currentTag = currentTag.ParentTag;
+				parentTag = currentTag?.ParentTag;
 			}
-			while (currentTag != _masterContainerTag);
+			while (currentTag != null);
 		}
 		
-		internal IEnumerable<GameplayTag> GetChildTagList(GameplayTag parentTag = null)
+		internal IEnumerable<GameplayTag> GetRootOrChildList(GameplayTag gameplayTag = null)
 		{
-			if (parentTag == null)
-				parentTag = _masterContainerTag;
-			
-			if(parentTag != _masterContainerTag && !HasTag(parentTag.FullTagName))
-				throw new NullReferenceException($"$Tag [{parentTag.FullTagName}] does not exist, so it's not possible to find the child tags for it");
-			
-			return parentTag.ChildTags;
+			return gameplayTag == null ? _rootTags : gameplayTag.ChildTags;
 		}
 		
 		internal List<GameplayTag> GetGameplayTagRecursive(GameplayTag parentTag = null)
 		{
-			if (parentTag == null)
-				parentTag = _masterContainerTag;
-			
 			List<GameplayTag> tags = new();
+			var tagList = GetRootOrChildList(parentTag);
 
-			if(parentTag != _masterContainerTag)
+			if(parentTag != null)
 				tags.Add(parentTag);
 
-			foreach (var childTag in parentTag.ChildTags)
+			foreach (var childTag in tagList)
 			{
 				tags.AddRange(GetGameplayTagRecursive(childTag));
 			}

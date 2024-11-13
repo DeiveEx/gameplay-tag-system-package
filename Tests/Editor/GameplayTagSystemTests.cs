@@ -480,4 +480,55 @@ public class GameplayTagSystemTests
 			Assert.AreEqual(parts[^2], gameplayTag.ParentTag.TagName);
 		}
 	}
+	
+	[Test]
+	[TestCase("a", 0)]
+	[TestCase("a.b", 1)]
+	[TestCase("a.b.c", 2)]
+	public void Tag_Has_Correct_Depth(string tagToAdd, int expectedDepth)
+	{
+		_tagContainer.AddTagInternal(tagToAdd);
+		var gameplayTag = _tagContainer.GetGameplayTag(tagToAdd);
+		
+		Assert.AreEqual(expectedDepth, gameplayTag.Depth);
+	}
+	
+	[Test]
+	[TestCase("a", "a", true)]
+	[TestCase("a.b", "a.b", true)]
+	[TestCase("a.b", "x.y", false)]
+	[TestCase("a.b", "a.x", false)]
+	public void Tag_CompareExact(string tagA, string tagB, bool expectedResult)
+	{
+		var a = GameplayTag.Create(tagA);
+		var b = GameplayTag.Create(tagB);
+		
+		Assert.AreEqual(expectedResult, a.CompareExact(b));
+	}
+	
+	[Test]
+	[TestCase("a", "a", true)]
+	[TestCase("a.b.c", "a.b.c", true)]
+	[TestCase("a", "a.b", true)]
+	[TestCase("a.b", "a", true)]
+	[TestCase("a.x", "a.y", false)]
+	[TestCase("a.b.x", "a.y", false)]
+	public void Tag_Compare(string tagA, string tagB, bool expectedResult)
+	{
+		var a = GameplayTag.Create(tagA);
+		var b = GameplayTag.Create(tagB);
+		
+		Assert.AreEqual(expectedResult, a.Compare(b));
+	}
+	
+	[Test]
+	[TestCase("a")]
+	[TestCase("a.b")]
+	[TestCase("a.b.c")]
+	[TestCase("x.y.z")]
+	public void Tag_Created_Successfully(string tag)
+	{
+		var gameplayTag = GameplayTag.Create(tag);
+		Assert.AreEqual(tag, gameplayTag.FullTagName);
+	}
 }
