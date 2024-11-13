@@ -1,23 +1,23 @@
 {
-    "name": "com.deiveex.gameplay-tag-system",
-    "version": "1.0.0",
-    "displayName": "Gameplay Tag System",
-    "description": "A multi-tag system for Unity",
-    "unity": "2022.3",
-    "unityRelease": "16f1",
-    "documentationUrl": "",
-    "changelogUrl": "",
-    "licensesUrl": "",
-    "dependencies": {
-        "com.deiveex.unity-utilities": "1.0.0"
-    },
-    "keywords": [
-        "tag",
-        "system"
-    ],
-    "author": {
-        "name": "Felipe Carmo Cavaco",
-        "email": "felipe.carmo.cavaco@gmail.com",
-        "url": "https://github.com/DeiveEx"
-    }
+  "name": "com.deiveex.gameplay-tag-system",
+  "version": "1.1.0",
+  "displayName": "Gameplay Tag System",
+  "description": "A multi-tag system for Unity",
+  "unity": "2022.3",
+  "unityRelease": "16f1",
+  "documentationUrl": "",
+  "changelogUrl": "",
+  "licensesUrl": "",
+  "dependencies": {
+    "com.deiveex.unity-utilities": "1.0.0"
+  },
+  "keywords": [
+    "tag",
+    "system"
+  ],
+  "author": {
+    "name": "Felipe Carmo Cavaco",
+    "email": "felipe.carmo.cavaco@gmail.com",
+    "url": "https://github.com/DeiveEx"
+  }
 }
