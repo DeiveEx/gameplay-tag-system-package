@@ -109,7 +109,7 @@ namespace DeiveEx.GameplayTagSystem
 		public GameplayTag GetGameplayTag(string tag)
 		{
 			tag = tag.ToLower();
-			string[] tagHierarchy = tag.Split('.');
+			int[] tagHierarchyHash = tag.Split('.').Select(x => x.GetHashCode()).ToArray();
 			int currentDepth = 0;
 
 			IEnumerable<GameplayTag> tagList = _rootTags;
@@ -117,7 +117,7 @@ namespace DeiveEx.GameplayTagSystem
 
 			do
 			{
-				currentContainer = GetTagInList(tagHierarchy[currentDepth], tagList);
+				currentContainer = GetTagInList(tagHierarchyHash[currentDepth], tagList);
 
 				//If we couldn't find a match for the current child tag, we don't have this tag at all
 				if (currentContainer == null)
@@ -127,7 +127,7 @@ namespace DeiveEx.GameplayTagSystem
 				currentDepth++;
 				tagList = currentContainer.ChildTags;
 			}
-			while (currentDepth < tagHierarchy.Length);
+			while (currentDepth < tagHierarchyHash.Length);
 
 			//If we reached the end of the hierarchy and we have a TagContainer, that means we found our match, else we don't have this tag
 			return currentContainer;
@@ -284,11 +284,11 @@ namespace DeiveEx.GameplayTagSystem
 
 		#region Private Methods
 
-		private GameplayTag GetTagInList(string tagToSearch, IEnumerable<GameplayTag> tagList)
+		private GameplayTag GetTagInList(int tagToSearchHash, IEnumerable<GameplayTag> tagList)
 		{
 			foreach (var gameplayTag in tagList)
 			{
-				if (gameplayTag.TagName == tagToSearch)
+				if (gameplayTag.Hash == tagToSearchHash)
 					return gameplayTag;
 			}
 
@@ -322,7 +322,7 @@ namespace DeiveEx.GameplayTagSystem
 			do
 			{
 				var childList = GetRootOrChildList(currentOwned);
-				var existingTag = GetTagInList(current.TagName, childList);
+				var existingTag = GetTagInList(current.Hash, childList);
 
 				if (existingTag == null)
 					break;

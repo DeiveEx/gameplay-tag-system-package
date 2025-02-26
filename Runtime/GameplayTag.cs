@@ -16,6 +16,7 @@ namespace DeiveEx.GameplayTagSystem
 		private Dictionary<string, GameplayTag> _childTags = new();
 		private int _count;
 		private int _depth;
+		private int _hash;
 
 		#endregion
 
@@ -52,6 +53,8 @@ namespace DeiveEx.GameplayTagSystem
 		public int Count => _count;
 		
 		public IEnumerable<GameplayTag> ChildTags => _childTags.Values;
+		
+		internal int Hash => _hash;
 
 		#endregion
 
@@ -61,6 +64,7 @@ namespace DeiveEx.GameplayTagSystem
 		{
 			TagName = tagName;
 			_count = 1;
+			_hash = tagName.GetHashCode();
 		}
 
 		#endregion
@@ -93,7 +97,7 @@ namespace DeiveEx.GameplayTagSystem
 			//From the smallest depth and up, the entire hierarchy needs to be the same for it to be considered similar
 			do
 			{
-				if (a.TagName != b.TagName)
+				if (a._hash != b._hash)
 					return false;
 
 				a = a.ParentTag;
@@ -130,7 +134,7 @@ namespace DeiveEx.GameplayTagSystem
 
 			do
 			{
-				if (a.TagName != b.TagName)
+				if (a._hash != b._hash)
 					return false;
 
 				a = a.ParentTag;
