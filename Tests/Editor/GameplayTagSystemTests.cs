@@ -2,6 +2,7 @@ using NUnit.Framework;
 using DeiveEx.GameplayTagSystem;
 using UnityEngine;
 
+[Category("GameplayTagSystem")]
 public class GameplayTagSystemTests
 {
 	private GameplayTagContainer _tagContainer;

@@ -69,7 +69,7 @@ namespace DeiveEx.GameplayTagSystem
 
 		/// <summary>
 		/// Check if this tag is similar to the given tag.<br/>
-		/// Note that they don't need to be exact the same. For checking hierarchical exactness, use <see cref="CompareExact"/> 
+		/// Note that they don't need to be exact the same. For checking hierarchical exactness, use <see cref="CompareExact(GameplayTag)"/> 
 		/// </summary>
 		/// <example>
 		/// a.b.c == a.b.c TRUE<br/>
