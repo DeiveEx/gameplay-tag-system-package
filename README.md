@@ -1,4 +1,7 @@
-﻿# Description
+THIS VERSION WILL NOT BE UPDATED ANYMORE.
+Check out the new version on the Unity Asset Store: https://assetstore.unity.com/packages/tools/utilities/tagtree-319017
+ 
+ # Description
 
 A tag system based on the Tag System used in the GameplayAbilitySystem for Unreal.
 
